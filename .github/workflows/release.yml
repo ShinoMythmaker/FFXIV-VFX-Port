@@ -23,6 +23,8 @@ jobs:
         run: |
           npm run build:portable
           npm run build:installer
+        env:
+          GH_TOKEN: ${{ secrets.GH_TOKEN }}
 
       - name: Upload portable artifact
         uses: actions/upload-release-asset@v1
