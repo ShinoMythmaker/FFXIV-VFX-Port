@@ -1,5 +1,5 @@
 {
-  "name": "FFXIV VFX Port",
+  "name": "ffxiv-vfx-port",
   "version": "1.0.0",
   "description": "Electron app to port VFX from one Gear to another in FFXIV.",
   "main": "main.js",
