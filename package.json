@@ -1,0 +1,16 @@
+{
+  "name": "FFXIV VFX Port",
+  "version": "1.0.0",
+  "description": "Electron app to port VFX from one Gear to another in FFXIV.",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "electron-builder --config electron-builder.json",
+    "build:portable": "electron-builder --config electron-builder.json --win portable",
+    "build:installer": "electron-builder --config electron-builder.json --win nsis"
+  },
+  "devDependencies": {
+    "electron": "^30.0.0",
+    "electron-builder": "^26.0.12"
+  }
+}

@@ -1,0 +1,13 @@
+{
+    "appId": "com.mythmaker-studio.ffxivvfxport",
+    "productName": "FFXIV VFX Port",
+    "directories": {
+        "output": "dist"
+    },
+    "win": {
+        "target": [
+            "portable",
+            "nsis"
+        ]
+    }
+}
