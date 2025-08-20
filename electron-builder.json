@@ -26,13 +26,5 @@
     },
     "portable": {
         "artifactName": "win_portable.exe"
-    },
-    "publish": [
-        {
-            "provider": "github",
-            "owner": "ShinoMythmaker",
-            "repo": "FFXIV-VFX-Port",
-            "draft": true
-        }
-    ]
+    }
 }
