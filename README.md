@@ -1,8 +1,8 @@
-<p align="center">
+<div align="center">
     <h1>FFXIV VFX Port  </h1>
 	<img src="https://img.shields.io/github/v/release/ShinoMythmaker/FFXIV-VFX-Port?label=version" alt="Version"/>
 	<img src="https://img.shields.io/github/release-date/ShinoMythmaker/FFXIV-VFX-Port" alt="Release Date"/>
-</p>
+</div>
 
 <div align="center">
 	<img src="icon.png" alt="App Icon" width="72" height="72" />
