@@ -1,5 +1,5 @@
 <div align="center">
-    <h1>FFXIV VFX Port  <img src="https://img.shields.io/github/v/release/ShinoMythmaker/FFXIV-VFX-Port?label=version" alt="Version"/>
+    <h1>FFXIV VFX Port   <img src="https://img.shields.io/github/v/release/ShinoMythmaker/FFXIV-VFX-Port?label=version" alt="Version"/>
 	<img src="https://img.shields.io/github/release-date/ShinoMythmaker/FFXIV-VFX-Port" alt="Release Date"/>
     </h1>
 </div>
