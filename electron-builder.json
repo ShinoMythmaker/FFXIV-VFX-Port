@@ -6,9 +6,33 @@
     },
     "win": {
         "target": [
-            "portable",
-            "nsis",
-            "msi"
-        ]
-    }
+            {
+                "target": "portable",
+                "arch": [
+                    "x64"
+                ]
+            },
+            {
+                "target": "nsis",
+                "arch": [
+                    "x64"
+                ]
+            }
+        ],
+        "artifactName": "${name}_${version}_${os}.${ext}"
+    },
+    "nsis": {
+        "artifactName": "win_installer.exe"
+    },
+    "portable": {
+        "artifactName": "win_portable.exe"
+    },
+    "publish": [
+        {
+            "provider": "github",
+            "owner": "ShinoMythmaker",
+            "repo": "FFXIV-VFX-Port",
+            "draft": true
+        }
+    ]
 }
