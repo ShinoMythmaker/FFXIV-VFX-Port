@@ -1,5 +1,8 @@
-
-# FFXIV VFX Port
+<h1>FFXIV VFX Port  </h1>
+<span align="center">
+	<img src="https://img.shields.io/github/v/release/ShinoMythmaker/FFXIV-VFX-Port?label=version" alt="Version"/>
+	<img src="https://img.shields.io/github/release-date/ShinoMythmaker/FFXIV-VFX-Port" alt="Release Date"/>
+</span>
 
 <div align="center">
 	<img src="icon.png" alt="App Icon" width="72" height="72" />
@@ -8,23 +11,19 @@
 	<a href="https://github.com/ShinoMythmaker/FFXIV-VFX-Port/releases/latest/download/win_portable.exe"><b>Download Portable</b></a> |
 	<a href="#guide"><b>Guide</b></a>
 	<br/>
-	<img src="https://img.shields.io/github/v/release/ShinoMythmaker/FFXIV-VFX-Port?label=version" alt="Version"/>
-	<img src="https://img.shields.io/github/release-date/ShinoMythmaker/FFXIV-VFX-Port" alt="Release Date"/>
 </div>
 
 <p align="center">
 <i>An app to port visual effects (VFX) from one gear to another within an existing mod in Final Fantasy XIV.</i>
 </p>
 
-<p align="center">
-	<img src="https://img.shields.io/github/v/release/ShinoMythmaker/FFXIV-VFX-Port?label=version" alt="Version"/>
-	<img src="https://img.shields.io/github/release-date/ShinoMythmaker/FFXIV-VFX-Port" alt="Release Date"/>
-</p>
+
 
 
 <div align="center">
-	<img src="sample.png" alt="Sample"/>
+	<img src="sample.png" alt="Sample" height="300px" width="auto"/>
 </div>
+
 ---
 ## 🤝 Contributing
 Contributions, bug reports, and feature requests are welcome! Please open an issue or pull request.
