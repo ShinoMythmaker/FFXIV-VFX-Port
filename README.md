@@ -1,8 +1,8 @@
-<h1>FFXIV VFX Port  </h1>
-<span align="center">
+<p align="center">
+    <h1>FFXIV VFX Port  </h1>
 	<img src="https://img.shields.io/github/v/release/ShinoMythmaker/FFXIV-VFX-Port?label=version" alt="Version"/>
 	<img src="https://img.shields.io/github/release-date/ShinoMythmaker/FFXIV-VFX-Port" alt="Release Date"/>
-</span>
+</p>
 
 <div align="center">
 	<img src="icon.png" alt="App Icon" width="72" height="72" />
@@ -24,7 +24,6 @@
 	<img src="sample.png" alt="Sample" height="300px" width="auto"/>
 </div>
 
----
 ## 🤝 Contributing
 Contributions, bug reports, and feature requests are welcome! Please open an issue or pull request.
 
