@@ -22,9 +22,9 @@
         "artifactName": "${name}_${version}_${os}.${ext}"
     },
     "nsis": {
-        "artifactName": "win_installer.exe"
+        "artifactName": "ffxiv-vfx-port_win_installer.exe"
     },
     "portable": {
-        "artifactName": "win_portable.exe"
+        "artifactName": "ffxiv-vfx-port_win_portable.exe"
     }
 }
