@@ -10,5 +10,11 @@
             "nsis",
             "msi"
         ]
-    }
+    },
+    "publish": [
+        {
+            "provider": "github",
+            "draft": true
+        }
+    ]
 }
