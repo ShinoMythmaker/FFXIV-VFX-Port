@@ -8,7 +8,7 @@
 
 A modern Electron app to port visual effects (VFX) from one gear to another in Final Fantasy XIV.
 
-![App Icon](icon.png)
+![App Icon](sample.png)
 
 ## Features
 - User-friendly interface for VFX porting
