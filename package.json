@@ -1,6 +1,6 @@
 {
   "name": "ffxiv-vfx-port",
-  "version": "1.0.1",
+  "version": "0.0.8",
   "description": "Electron app to port VFX from one Gear to another in FFXIV.",
   "author": "Shino Mythmaker",
   "main": "main.js",
