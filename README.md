@@ -7,8 +7,8 @@
 <div align="center">
 	<img src="icon.png" alt="App Icon" width="72" height="72" />
 	<br/>
-	<a href="https://github.com/ShinoMythmaker/FFXIV-VFX-Port/releases/latest/download/win_installer.exe"><b>Download Installer</b></a> |
-	<a href="https://github.com/ShinoMythmaker/FFXIV-VFX-Port/releases/latest/download/win_portable.exe"><b>Download Portable</b></a> |
+	<a href="https://github.com/ShinoMythmaker/FFXIV-VFX-Port/releases/latest/download/ffxiv-vfx-port_win_installer.exe"><b>Download Installer</b></a> |
+	<a href="https://github.com/ShinoMythmaker/FFXIV-VFX-Port/releases/latest/download/ffxiv-vfx-port_win_portable.exe"><b>Download Portable</b></a> |
 	<a href="#guide"><b>Guide</b></a>
 	<br/>
 </div>
@@ -16,9 +16,6 @@
 <p align="center">
 <i>An app to port visual effects (VFX) from one gear to another within an existing mod in Final Fantasy XIV.</i>
 </p>
-
-
-
 
 <div align="center">
 	<img src="sample.png" alt="Sample" height="300px" width="auto"/>
