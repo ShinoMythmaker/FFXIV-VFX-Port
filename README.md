@@ -9,7 +9,7 @@
 	<br/>
 	<a href="https://github.com/ShinoMythmaker/FFXIV-VFX-Port/releases/latest/download/ffxiv-vfx-port_win_installer.exe"><b>Download Installer</b></a> |
 	<a href="https://github.com/ShinoMythmaker/FFXIV-VFX-Port/releases/latest/download/ffxiv-vfx-port_win_portable.exe"><b>Download Portable</b></a> |
-	<a href="#guide"><b>Guide</b></a>
+	<a href="https://publish.obsidian.md/mythworks/Guides/Porting+VFX+within+a+Mod"><b>Guide</b></a>
 	<br/>
 </div>
 
