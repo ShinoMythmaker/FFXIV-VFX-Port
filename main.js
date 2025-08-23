@@ -179,10 +179,12 @@ ipcMain.handle('list-imc-gear', async (event, modFolderPath) => {
           const entryData = entry.Entry || {};
           let vfxIdStr = String(entryData.VfxId).padStart(4, '0');
           let primaryIdStr = String(entry.PrimaryId).padStart(4, '0');
-          let vfxPath = '';
           let secondaryIdStr = entry.SecondaryId !== undefined ? String(entry.SecondaryId).padStart(4, '0') : '';
+          let vfxPath = '';
           if (entry.ObjectType === 'Accessory') {
             vfxPath = `chara/accessory/a${primaryIdStr}/vfx/eff/va${vfxIdStr}.avfx`;
+          } else if (entry.ObjectType === 'Weapon') {
+            vfxPath = `chara/weapon/w${primaryIdStr}/obj/body/b${secondaryIdStr}/vfx/eff/vw${vfxIdStr}.avfx`;
           } else if (entry.ObjectType === 'Equipment') {
             vfxPath = `chara/equipment/e${primaryIdStr}/vfx/eff/ve${vfxIdStr}.avfx`;
           } else {

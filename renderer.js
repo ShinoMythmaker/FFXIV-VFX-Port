@@ -160,11 +160,16 @@ function renderOpenRow(item, idx) {
 }
 
 function getProjectedPath(type, primaryId, vfxId, secondaryId) {
+  const pId = String(primaryId).padStart(4, '0');
+  const sId = String(secondaryId).padStart(4, '0');
+  const vId = String(vfxId).padStart(4, '0');
   if (type === 'Accessory') {
-    return `chara/accessory/a${primaryId}/vfx/eff/va${vfxId}.avfx`;
+    return `chara/accessory/a${pId}/vfx/eff/va${vId}.avfx`;
+  } else if (type === 'Weapon') {
+    return `chara/weapon/w${pId}/obj/body/b${sId}/vfx/eff/vw${vId}.avfx`;
   } else {
     // Default to Equipment
-    return `chara/equipment/e${primaryId}/vfx/eff/ve${vfxId}.avfx`;
+    return `chara/equipment/e${pId}/vfx/eff/ve${vId}.avfx`;
   }
 }
 
