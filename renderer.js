@@ -84,12 +84,14 @@ async function showImcGearList(modName) {
 }
 
 function renderClosedRow(item, idx) {
+  const secondaryId = item.SecondaryId !== undefined && item.SecondaryId !== '' ? `, Secondary: ${item.SecondaryId}` : '';
+  const bodySlot = item.BodySlot !== undefined && item.BodySlot !== '' ? `, BodySlot: ${item.BodySlot}` : '';
   return `
     <div class="port-row-modern port-row-closed" data-row-idx="${idx}">
       <div class="port-row-info">
         <div class="port-col-info">
           <div class="port-row-header">
-            <span class="port-row-label">${item.ObjectType || 'Equipment'}</span> ID: ${item.PrimaryId}, Variant: ${item.Variant}, Slot: ${item.EquipSlot}, VFX: ${item.VfxId}
+            <span class="port-row-label">${item.ObjectType || 'Equipment'}</span> ID: ${item.PrimaryId}${secondaryId}, Variant: ${item.Variant}, Slot: ${item.EquipSlot}${bodySlot}, VFX: ${item.VfxId}
           </div>
           <div class="port-row-path">
             <span class="port-row-label">Path:</span> <span class="port-row-path-value">${item.vfxPath}</span>
@@ -108,14 +110,16 @@ function renderClosedRow(item, idx) {
 function renderOpenRow(item, idx) {
   const type = item.ObjectType || 'Equipment';
   const slotList = slotOptions[type] || [];
+  const secondaryId = item.SecondaryId !== undefined && item.SecondaryId !== '' ? item.SecondaryId : '';
+  const bodySlot = item.BodySlot !== undefined && item.BodySlot !== '' ? item.BodySlot : 'Unknown';
   // Use a placeholder for projected path, will be updated live
-  const projectedPath = getProjectedPath(type, item.PrimaryId, item.VfxId);
+  const projectedPath = getProjectedPath(type, item.PrimaryId, item.VfxId, secondaryId);
   return `
     <div class="port-row-modern port-row-open" data-row-idx="${idx}">
       <div class="port-row-info">
         <div class="port-col-info">
           <div class="port-row-header">
-            <span class="port-row-label">${item.ObjectType || 'Equipment'}</span> ID: ${item.PrimaryId}, Variant: ${item.Variant}, Slot: ${item.EquipSlot}, VFX: ${item.VfxId}
+            <span class="port-row-label">${item.ObjectType || 'Equipment'}</span> ID: ${item.PrimaryId}${secondaryId !== '' ? `, Secondary: ${secondaryId}` : ''}, Variant: ${item.Variant}, Slot: ${item.EquipSlot}, BodySlot: ${bodySlot}, VFX: ${item.VfxId}
           </div>
           <div class="port-row-path">
             <span class="port-row-label">Path:</span> <span class="port-row-path-value">${item.vfxPath}</span>
@@ -128,9 +132,13 @@ function renderOpenRow(item, idx) {
               ${typeOptions.map(opt => `<option value="${opt}"${opt === type ? ' selected' : ''}>${opt}</option>`).join('')}
             </select>
             <input type="text" class="port-equipid" value="${item.PrimaryId}" title="Primary ID" />
+            <input type="text" class="port-secondaryid" value="${secondaryId}" title="Secondary ID" />
             <input type="text" class="port-variant" value="${item.Variant}" title="Variant ID" />
             <select class="port-slot" title="Equip Slot">
               ${slotList.map(opt => `<option value="${opt}"${opt === item.EquipSlot ? ' selected' : ''}>${opt}</option>`).join('')}
+            </select>
+            <select class="port-bodyslot" title="Body Slot">
+              ${['Unknown', 'Body'].map(opt => `<option value="${opt}"${opt === bodySlot ? ' selected' : ''}>${opt}</option>`).join('')}
             </select>
             <input type="text" class="port-vfxid" value="${item.VfxId}" title="VFX ID"/>
           </div>
@@ -151,7 +159,7 @@ function renderOpenRow(item, idx) {
   `;
 }
 
-function getProjectedPath(type, primaryId, vfxId) {
+function getProjectedPath(type, primaryId, vfxId, secondaryId) {
   if (type === 'Accessory') {
     return `chara/accessory/a${primaryId}/vfx/eff/va${vfxId}.avfx`;
   } else {
@@ -184,14 +192,17 @@ function bindPortRowEvents(items) {
   if (openRow) {
     const typeEl = openRow.querySelector('.port-type');
     const idEl = openRow.querySelector('.port-equipid');
+    const secondaryEl = openRow.querySelector('.port-secondaryid');
     const vfxEl = openRow.querySelector('.port-vfxid');
     const slotEl = openRow.querySelector('.port-slot');
+    const bodySlotEl = openRow.querySelector('.port-bodyslot');
     const projectedPathEl = openRow.querySelector('.projected-path');
     function updateProjectedPath() {
       const type = typeEl.value;
       const id = idEl.value.padStart(4, '0');
+      const secondary = secondaryEl.value.padStart(4, '0');
       const vfx = vfxEl.value.padStart(4, '0');
-      projectedPathEl.textContent = getProjectedPath(type, id, vfx);
+      projectedPathEl.textContent = getProjectedPath(type, id, vfx, secondary);
     }
     // Update slot options when type changes
     function updateSlotOptions() {
@@ -208,7 +219,7 @@ function bindPortRowEvents(items) {
       updateSlotOptions();
       updateProjectedPath();
     });
-    [typeEl, idEl, vfxEl].forEach(el => {
+    [typeEl, idEl, secondaryEl, vfxEl].forEach(el => {
       el.addEventListener('input', updateProjectedPath);
       el.addEventListener('change', updateProjectedPath);
     });
@@ -225,25 +236,31 @@ function bindPortRowEvents(items) {
       // Get current field values
       const type = openRow.querySelector('.port-type').value;
       const primaryId = openRow.querySelector('.port-equipid').value.padStart(4, '0');
+      const secondaryId = openRow.querySelector('.port-secondaryid').value.padStart(4, '0');
       const variant = openRow.querySelector('.port-variant').value;
       const equipSlot = openRow.querySelector('.port-slot').value;
+      const bodySlot = openRow.querySelector('.port-bodyslot').value;
       const vfxId = openRow.querySelector('.port-vfxid').value.padStart(4, '0');
       const originalVfxPath = item.vfxPath;
-      const newVfxPath = getProjectedPath(type, primaryId, vfxId);
+      const newVfxPath = getProjectedPath(type, primaryId, vfxId, secondaryId);
       // Build IMC update object (new values)
       const imcUpdate = {
         ObjectType: type,
         PrimaryId: primaryId,
+        SecondaryId: secondaryId,
         Variant: variant,
         EquipSlot: equipSlot,
+        BodySlot: bodySlot,
         Entry: { VfxId: vfxId }
       };
       // Build originalImc object (from the original item)
       const originalImc = {
         ObjectType: item.ObjectType,
         PrimaryId: item.PrimaryId,
+        SecondaryId: item.SecondaryId,
         Variant: item.Variant,
         EquipSlot: item.EquipSlot,
+        BodySlot: item.BodySlot,
         Entry: { VfxId: item.VfxId }
       };
       // Call backend

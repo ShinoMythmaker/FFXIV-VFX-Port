@@ -39,24 +39,30 @@ ipcMain.handle('apply-vfx-port', async (event, args) => {
               filePath,
               ObjectType: entry.ObjectType,
               PrimaryId: entry.PrimaryId,
+              SecondaryId: entry.SecondaryId,
               Variant: entry.Variant,
               EquipSlot: entry.EquipSlot,
+              BodySlot: entry.BodySlot,
               VfxId: entry.Entry.VfxId
             }, 'vs', originalImc);
             // Match against originalImc (not imcUpdate)
             if (
               entry.ObjectType === originalImc.ObjectType &&
               Number(entry.PrimaryId) === Number(originalImc.PrimaryId) &&
+              Number(entry.SecondaryId || 0) === Number(originalImc.SecondaryId || 0) &&
               Number(entry.Variant) === Number(originalImc.Variant) &&
               String(entry.EquipSlot) === String(originalImc.EquipSlot) &&
+              String(entry.BodySlot || 'Unknown') === String(originalImc.BodySlot || 'Unknown') &&
               Number(entry.Entry.VfxId) === Number(originalImc.Entry.VfxId)
             ) {
               console.log('[apply-vfx-port] IMC match found, updating Entry in', filePath);
               // Update only the specified fields
               entry.ObjectType = imcUpdate.ObjectType;
               entry.PrimaryId = imcUpdate.PrimaryId;
+              entry.SecondaryId = imcUpdate.SecondaryId;
               entry.Variant = imcUpdate.Variant;
               entry.EquipSlot = imcUpdate.EquipSlot;
+              entry.BodySlot = imcUpdate.BodySlot;
               if (entry.Entry) entry.Entry.VfxId = imcUpdate.Entry.VfxId;
               changed = true;
             }
@@ -174,6 +180,7 @@ ipcMain.handle('list-imc-gear', async (event, modFolderPath) => {
           let vfxIdStr = String(entryData.VfxId).padStart(4, '0');
           let primaryIdStr = String(entry.PrimaryId).padStart(4, '0');
           let vfxPath = '';
+          let secondaryIdStr = entry.SecondaryId !== undefined ? String(entry.SecondaryId).padStart(4, '0') : '';
           if (entry.ObjectType === 'Accessory') {
             vfxPath = `chara/accessory/a${primaryIdStr}/vfx/eff/va${vfxIdStr}.avfx`;
           } else if (entry.ObjectType === 'Equipment') {
@@ -184,8 +191,10 @@ ipcMain.handle('list-imc-gear', async (event, modFolderPath) => {
           allImc.push({
             ObjectType: entry.ObjectType,
             PrimaryId: entry.PrimaryId,
+            SecondaryId: entry.SecondaryId,
             Variant: entry.Variant,
             EquipSlot: entry.EquipSlot,
+            BodySlot: entry.BodySlot,
             VfxId: entryData.VfxId,
             vfxPath
           });
@@ -196,7 +205,7 @@ ipcMain.handle('list-imc-gear', async (event, modFolderPath) => {
     const imcCountMap = {};
     const pathCountMap = {};
     allImc.forEach(item => {
-      const imcKey = [item.ObjectType, item.PrimaryId, item.Variant, item.EquipSlot, item.VfxId].join('-');
+      const imcKey = [item.ObjectType, item.PrimaryId, item.SecondaryId, item.Variant, item.EquipSlot, item.BodySlot, item.VfxId].join('-');
       imcCountMap[imcKey] = (imcCountMap[imcKey] || 0) + 1;
       pathCountMap[item.vfxPath] = (pathCountMap[item.vfxPath] || 0) + 1;
     });
@@ -204,7 +213,7 @@ ipcMain.handle('list-imc-gear', async (event, modFolderPath) => {
     const seen = new Set();
     const results = [];
     allImc.forEach(item => {
-      const imcKey = [item.ObjectType, item.PrimaryId, item.Variant, item.EquipSlot, item.VfxId].join('-');
+      const imcKey = [item.ObjectType, item.PrimaryId, item.SecondaryId, item.Variant, item.EquipSlot, item.BodySlot, item.VfxId].join('-');
       if (!seen.has(imcKey)) {
         seen.add(imcKey);
         results.push({

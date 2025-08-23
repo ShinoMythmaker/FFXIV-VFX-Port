@@ -381,6 +381,11 @@ select:focus,
     text-align: center;
 }
 
+.port-secondaryid {
+    width: 60px;
+    text-align: center;
+}
+
 .port-variant {
     width: 35px;
     text-align: center;
