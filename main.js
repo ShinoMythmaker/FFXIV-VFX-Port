@@ -1,62 +1,66 @@
-
 const { app, BrowserWindow, dialog, ipcMain } = require('electron');
 const path = require('path');
 const fs = require('fs');
 
-// Handler to apply VFX port and update IMC in all JSON files in a mod folder
+// --- Utility Functions ---
+function walkJsonFiles(dir, filelist = []) {
+  fs.readdirSync(dir, { withFileTypes: true }).forEach(dirent => {
+    const fullPath = path.join(dir, dirent.name);
+    if (dirent.isDirectory()) {
+      walkJsonFiles(fullPath, filelist);
+    } else if (dirent.isFile() && fullPath.endsWith('.json')) {
+      filelist.push(fullPath);
+    }
+  });
+  return filelist;
+}
+
+function readJsonFile(filePath) {
+  let raw = fs.readFileSync(filePath, 'utf8');
+  if (raw.charCodeAt(0) === 0xFEFF) raw = raw.slice(1);
+  return JSON.parse(raw);
+}
+
+function writeJsonFile(filePath, data) {
+  fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
+}
+
+// --- IPC Handlers ---
 ipcMain.handle('apply-vfx-port', async (event, args) => {
   const { modFolderPath, originalVfxPath, newVfxPath, imcUpdate, originalImc = {} } = args;
-  const walkSync = (dir, filelist = []) => {
-    fs.readdirSync(dir, { withFileTypes: true }).forEach(dirent => {
-      const fullPath = path.join(dir, dirent.name);
-      if (dirent.isDirectory()) {
-        walkSync(fullPath, filelist);
-      } else if (dirent.isFile() && fullPath.endsWith('.json')) {
-        filelist.push(fullPath);
-      }
-    });
-    return filelist;
-  };
   try {
-    const files = walkSync(modFolderPath);
-    console.log('[apply-vfx-port] Files found:', files);
+    const files = walkJsonFiles(modFolderPath);
     let anyChanged = false;
     for (const filePath of files) {
       let changed = false;
-      let raw = fs.readFileSync(filePath, 'utf8');
-      if (raw.charCodeAt(0) === 0xFEFF) raw = raw.slice(1);
-      let newRaw = raw.split(originalVfxPath).join(newVfxPath);
       let data;
-      try { data = JSON.parse(newRaw); } catch { console.log('[apply-vfx-port] Failed to parse JSON:', filePath); continue; }
+      let raw;
+      try {
+        raw = fs.readFileSync(filePath, 'utf8');
+        if (raw.charCodeAt(0) === 0xFEFF) raw = raw.slice(1);
+        let newRaw = raw.split(originalVfxPath).join(newVfxPath);
+        data = JSON.parse(newRaw);
+      } catch {
+        continue;
+      }
       // Update IMC if needed
       const updateImc = (manips) => {
         if (!Array.isArray(manips)) return;
         for (const manip of manips) {
           if (manip.Type === 'Imc' && manip.Manipulation && manip.Manipulation.Entry) {
             const entry = manip.Manipulation;
-            // Debug: print what we're checking
-            console.log('[apply-vfx-port] Checking IMC:', {
-              filePath,
-              ObjectType: entry.ObjectType,
-              PrimaryId: entry.PrimaryId,
-              SecondaryId: entry.SecondaryId,
-              Variant: entry.Variant,
-              EquipSlot: entry.EquipSlot,
-              BodySlot: entry.BodySlot,
-              VfxId: entry.Entry.VfxId
-            }, 'vs', originalImc);
-            // Match against originalImc (not imcUpdate)
-            if (
+            // Match all relevant fields, including SecondaryId and BodySlot
+            const match = (
               entry.ObjectType === originalImc.ObjectType &&
-              Number(entry.PrimaryId) === Number(originalImc.PrimaryId) &&
-              Number(entry.SecondaryId || 0) === Number(originalImc.SecondaryId || 0) &&
-              Number(entry.Variant) === Number(originalImc.Variant) &&
+              String(entry.PrimaryId) === String(originalImc.PrimaryId) &&
+              String(entry.SecondaryId || '') === String(originalImc.SecondaryId || '') &&
+              String(entry.Variant) === String(originalImc.Variant) &&
               String(entry.EquipSlot) === String(originalImc.EquipSlot) &&
               String(entry.BodySlot || 'Unknown') === String(originalImc.BodySlot || 'Unknown') &&
-              Number(entry.Entry.VfxId) === Number(originalImc.Entry.VfxId)
-            ) {
-              console.log('[apply-vfx-port] IMC match found, updating Entry in', filePath);
-              // Update only the specified fields
+              String(entry.Entry.VfxId) === String(originalImc.Entry.VfxId)
+            );
+            if (match) {
+              // Always update all fields, including SecondaryId and BodySlot
               entry.ObjectType = imcUpdate.ObjectType;
               entry.PrimaryId = imcUpdate.PrimaryId;
               entry.SecondaryId = imcUpdate.SecondaryId;
@@ -73,13 +77,12 @@ ipcMain.handle('apply-vfx-port', async (event, args) => {
         for (const opt of data.Options) updateImc(opt.Manipulations);
       }
       if (Array.isArray(data.Manipulations)) updateImc(data.Manipulations);
-      if (raw !== newRaw || changed) {
-        fs.writeFileSync(filePath, JSON.stringify(data, null, 2), 'utf8');
-        console.log('[apply-vfx-port] File written:', filePath);
+      // Write if changed or if VFX path changed
+      if (changed || raw !== JSON.stringify(data, null, 2)) {
+        writeJsonFile(filePath, data);
         anyChanged = true;
       }
     }
-    if (!anyChanged) console.log('[apply-vfx-port] No files changed.');
     return true;
   } catch (e) {
     console.log('[apply-vfx-port] Error:', e);
@@ -87,49 +90,8 @@ ipcMain.handle('apply-vfx-port', async (event, args) => {
   }
 });
 
-function createWindow() {
-  const win = new BrowserWindow({
-    width: 800,
-    height: 600,
-    icon: path.join(__dirname, 'icon.png'),
-    webPreferences: {
-      preload: path.join(__dirname, 'preload.js'),
-      nodeIntegration: false,
-      contextIsolation: true
-    }
-  });
-  win.loadFile('index.html');
-
-  // Remove the default menu/toolbar for a clean look
-  win.setMenuBarVisibility(false);
-  win.removeMenu();
-
-  // Force all external links to open in the user's default browser
-  const { shell } = require('electron');
-  win.webContents.setWindowOpenHandler(({ url }) => {
-    if (url.startsWith('http')) {
-      shell.openExternal(url);
-      return { action: 'deny' };
-    }
-    return { action: 'allow' };
-  });
-}
-
-app.whenReady().then(() => {
-  createWindow();
-  app.on('activate', function () {
-    if (BrowserWindow.getAllWindows().length === 0) createWindow();
-  });
-});
-
-app.on('window-all-closed', function () {
-  if (process.platform !== 'darwin') app.quit();
-});
-
 ipcMain.handle('select-folder', async () => {
-  const result = await dialog.showOpenDialog({
-    properties: ['openDirectory']
-  });
+  const result = await dialog.showOpenDialog({ properties: ['openDirectory'] });
   if (result.canceled) return null;
   return result.filePaths[0];
 });
@@ -144,11 +106,8 @@ ipcMain.handle('list-mods', async (event, folderPath) => {
   }
 });
 
-// Handler to scan a mod folder for all IMC gear changes
 ipcMain.handle('list-imc-gear', async (event, modFolderPath) => {
   if (!modFolderPath) return [];
-  const path = require('path');
-  const fs = require('fs');
   let allImc = [];
   try {
     const files = fs.readdirSync(modFolderPath).filter(f => f.endsWith('.json'));
@@ -156,9 +115,7 @@ ipcMain.handle('list-imc-gear', async (event, modFolderPath) => {
       const filePath = path.join(modFolderPath, file);
       let data;
       try {
-        let raw = fs.readFileSync(filePath, 'utf8');
-        if (raw.charCodeAt(0) === 0xFEFF) raw = raw.slice(1);
-        data = JSON.parse(raw);
+        data = readJsonFile(filePath);
       } catch (e) {
         continue;
       }
@@ -229,4 +186,39 @@ ipcMain.handle('list-imc-gear', async (event, modFolderPath) => {
   } catch (e) {
     return [];
   }
+});
+
+function createWindow() {
+  const win = new BrowserWindow({
+    width: 800,
+    height: 600,
+    icon: path.join(__dirname, 'icon.png'),
+    webPreferences: {
+      preload: path.join(__dirname, 'preload.js'),
+      nodeIntegration: false,
+      contextIsolation: true
+    }
+  });
+  win.loadFile('index.html');
+  win.setMenuBarVisibility(false);
+  win.removeMenu();
+  const { shell } = require('electron');
+  win.webContents.setWindowOpenHandler(({ url }) => {
+    if (url.startsWith('http')) {
+      shell.openExternal(url);
+      return { action: 'deny' };
+    }
+    return { action: 'allow' };
+  });
+}
+
+app.whenReady().then(() => {
+  createWindow();
+  app.on('activate', function () {
+    if (BrowserWindow.getAllWindows().length === 0) createWindow();
+  });
+});
+
+app.on('window-all-closed', function () {
+  if (process.platform !== 'darwin') app.quit();
 });
