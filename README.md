@@ -1,6 +1,7 @@
 <div align="center">
     <h1>FFXIV VFX Port   <img src="https://img.shields.io/github/v/release/ShinoMythmaker/FFXIV-VFX-Port?label=version" alt="Version"/>
 	<img src="https://img.shields.io/github/release-date/ShinoMythmaker/FFXIV-VFX-Port" alt="Release Date"/>
+	<a href="https://www.paypal.com/donate/?hosted_button_id=VVSSL3GDRSBNC"><img alt="Sponsor Badge" src="https://img.shields.io/badge/Mythmaker-Sponsor-pink?style=flat"></a>
     </h1>
 </div>
 
